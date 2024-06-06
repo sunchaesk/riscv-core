@@ -4,7 +4,7 @@ SRCS := $(wildcard *.v) $(wildcard */*.v)
 
 
 # iverilog flags
-GENERATION_FLAG := -g2001
+GENERATION_FLAG := -g2005
 WARNING_FLAG := -Wall -Wno-timescale
 
 # tcl / gtkwave
