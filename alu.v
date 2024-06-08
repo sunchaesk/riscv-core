@@ -2,7 +2,7 @@
 /*
  zero_flag is set to zero if the alu_result is zero
  ALU Control lines | Function
- -----------------------------
+w -----------------------------
  0000    Bitwise-AND
  0001    Bitwise-OR
  0010    Add (A+B)
