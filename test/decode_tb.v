@@ -1,4 +1,5 @@
 `timescale 1ns / 1ps
+`include "test_macro.vh"
 
 module decoder_tb;
    // declare input/output
@@ -25,6 +26,8 @@ module decoder_tb;
    initial begin
       $dumpfile("exe.vcd");
       $dumpvars(0, decoder_tb);
+
+      `assert(1'b0, 1'b0);
 
       instruction = 32'b00000000010000010000000010010011
 ; #10;
