@@ -6,3 +6,4 @@ https://www.cs.sfu.ca/~ashriram/Courses/CS295/assets/notebooks/RISCV/RISCV_CARD.
 https://luplab.gitlab.io/rvcodecjs/#q=add+x1,+x0,+x0&abi=false&isa=AUTO
 https://passlab.github.io/CSE564/notes/lecture08_RISCV_Impl.pdf
 https://www.cs.cornell.edu/courses/cs3410/2019sp/schedule/slides/06-cpu-pre.pdf
+https://en.wikichip.org/wiki/risc-v/registers
