@@ -1,7 +1,3 @@
-
-`include "MEM.v" // not using
-
-// Instruction Fetch Unit (IFU)
 module IFU (
             input wire         clk,
             input wire         reset,

@@ -27,7 +27,7 @@ module register_file (
       end else begin
          // first register (5'b0) is the zero register (always zero)
          if (reg_write && (write_reg != 5'b0)) begin
-            reg_array[write_red] <= write_data;
+            reg_array[write_reg] <= write_data;
          end
       end
    end
