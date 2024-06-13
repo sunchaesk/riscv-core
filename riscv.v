@@ -22,13 +22,24 @@ module riscv_processor (
    wire [4:0]                         rs2;
    wire [31:0]                        imm;
 
+   // declaration for control unit
+   wire [3:0]                         alu_control;
+   wire                               regwrite_control;
+
+   // declaration for ALU
+   wire [31:0]                        alu_result;
+   wire                               zero_flag;
+
+   // declaration for Register File
+   wire [31:0]                        read_data1;
+   wire [31:0]                        read_data2;
 
 
    IFU instruction_fetch_unit (
                                .clk(clk),
                                .reset(reset),
-                               .branch_target(),
-                               .branch_taken(),
+                               .branch_target(0),
+                               .branch_taken(0),
                                .pc(pc),
                                .instruction(fetched_instruction)
                                );
@@ -44,26 +55,34 @@ module riscv_processor (
                         .imm(imm)
                         );
 
+   control control_unit (
+                         .opcode(opcode),
+                         .funct3(funct3),
+                         .funct7(funct7),
+                         .alu_control(alu_control),
+                         .regwrite_control(regwrite_control)
+                         );
+
+
+   ALU arithmetic_logic_unit (
+                              .in_a(rs1),
+                              .in_b(rs2),
+                              .alu_control(alu_control),
+                              .alu_result(alu_result),
+                              .zero_flag(zero_flag)
+                              );
 
    register_file register_file_unit (
                                      .clk(clk),
                                      .reset(reset),
-                                     .read_reg1(),
-                                     .read_reg2(),
-                                     .write_reg(),
-                                     .write_data(),
-                                     .reg_write(),
-                                     .read_data1(),
-                                     .read_data2()
+                                     .read_reg1(rs1),
+                                     .read_reg2(rs2),
+                                     .write_reg(rd),
+                                     .write_data(alu_result),
+                                     .reg_write(regwrite_control),
+                                     .read_data1(read_data1),
+                                     .read_data2(read_data2)
                                      );
-
-
-   ALU arithmetic_logic_unit (
-                              .in_a(),
-                              .in_b(),
-                              .alu_control(),
-                              .zero_flag()
-                              );
 
 
 endmodule

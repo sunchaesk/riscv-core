@@ -2,7 +2,7 @@
 /*
  zero_flag is set to zero if the alu_result is zero
  ALU Control lines | Function
-w -----------------------------
+ -----------------------------
  0000    Bitwise-AND
  0001    Bitwise-OR
  0010    Add (A+B)
@@ -23,15 +23,16 @@ module ALU (
 
    always @(*) begin
       case (alu_control)
-        4'b0000: alu_result = in_a & in_b;
-        4'b0001: alu_result = in_a | in_b;
-        4'b0010: alu_result = in_a + in_b;
-        4'b0100: alu_result = in_a - in_b;
-        4'b1000: alu_result = (in_a < in_b) ? 32'b1 : 32'b0;
-        4'b0011: alu_result = in_a << in_b;
-        4'b0101: alu_result = in_a >> in_b;
-        4'b0110: alu_result = in_a * in_b;
-        4'b0111: alu_result = in_a ^ in_b;
+        4'b0000: alu_result = in_a & in_b; // AND
+        4'b0001: alu_result = in_a | in_b; // OR
+        4'b0010: alu_result = in_a + in_b; // ADD
+        4'b0100: alu_result = in_a - in_b; // SUB
+        4'b1000: alu_result = (in_a < in_b) ? 32'b1 : 32'b0; // SLT
+        4'b0011: alu_result = in_a << in_b; // SLL
+        4'b0101: alu_result = in_a >> in_b; // SRL
+        4'b0110: alu_result = ($unsigned(in_a) < $unsigned(in_b)) ? 32'b1 : 32'b0;  // SLTU
+        4'b0111: alu_result = in_a ^ in_b; // XOR
+        4'b1001: alu_result = in_a >>> in_b; // SRA
       endcase
 
       if (alu_result == 0)

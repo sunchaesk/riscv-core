@@ -22,4 +22,12 @@ module IFU (
       end
    end
 
+   assign pc = pc_reg;
+
+   always @(posedge clk) begin
+      if (reset) begin
+         instruction <= 32'b0;
+      end else begin
+         instruction <= instruction_memory[pc_reg[31:2]] // ?? TODO NOTE
+
 endmodule

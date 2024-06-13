@@ -6,7 +6,7 @@ TEST ?= test/alu_tb.v
 
 
 # iverilog flags
-GENERATION_FLAG := -g2005
+GENERATION_FLAG := -g2012
 WARNING_FLAG := -Wall -Wno-timescale
 INCLUDE_FLAG := -I test/
 
