@@ -2,8 +2,8 @@
 module riscv_processor (
                         input         clk,
                         input         reset,
-                        output [31:0] pc_out;
-                        output [31:0] instruction_out;
+                        output [31:0] pc_out,
+                        output [31:0] instruction_out
                         );
 
    // PC stuff
@@ -38,8 +38,8 @@ module riscv_processor (
    IFU instruction_fetch_unit (
                                .clk(clk),
                                .reset(reset),
-                               .branch_target(0),
-                               .branch_taken(0),
+                               .branch_target(32'b0),
+                               .branch_taken(1'b0),
                                .pc(pc),
                                .instruction(fetched_instruction)
                                );
@@ -65,8 +65,8 @@ module riscv_processor (
 
 
    ALU arithmetic_logic_unit (
-                              .in_a(rs1),
-                              .in_b(rs2),
+                              .in_a(read_data1),
+                              .in_b(read_data2),
                               .alu_control(alu_control),
                               .alu_result(alu_result),
                               .zero_flag(zero_flag)

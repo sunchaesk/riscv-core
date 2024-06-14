@@ -3,8 +3,8 @@ module IFU (
             input wire         reset,
             input wire [31:0]  branch_target,
             input wire         branch_taken,
-            output wire [31:0] pc,
-            output wire [31:0] instruction
+            output reg [31:0] pc,
+            output reg [31:0] instruction
             );
 
    reg [31:0]                  pc_reg; // ProgramCounter internal
@@ -28,6 +28,8 @@ module IFU (
       if (reset) begin
          instruction <= 32'b0;
       end else begin
-         instruction <= instruction_memory[pc_reg[31:2]] // ?? TODO NOTE
+         instruction <= instruction_memory[pc_reg[31:2]];  // ?? TODO NOTE
+      end
+   end
 
 endmodule

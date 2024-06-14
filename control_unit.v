@@ -26,6 +26,7 @@ module control (
              4'b0110: alu_control = 4'b0001; // OR
              4'b0111: alu_control = 4'b0000; // AND
              default: alu_control = 4'b1111; // default value set to 1111
+           endcase
         end
       endcase
    end

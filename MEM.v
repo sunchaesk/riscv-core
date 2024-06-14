@@ -1,22 +1,21 @@
 
-module memory_unit(
-                   data_in,
-                   address,
-                   clk,
-                   write,
-                   data_out
-                   );
+module memory_unit (
+                    input         clk,
+                    input         write,
+                    input [31:0]  data_in,
+                    input [31:0]  address,
+                    output [31:0] data_out
+                    );
 
-   parameter memory_size = 1024; // 1KB memory
+   parameter                      MEMORY_SIZE = 1024; // 1KB memory
 
-   output [31:0] data_out;
-   input [31:0]  data_in;
-   input [31:0]  address;
-   input         clk, write;
-   reg [31:0]    memory [memory_size-1:0]; // memory init
+   reg [31:0]                     memory [MEMORY_SIZE-1:0]; // memory init
 
    assign data_out = memory[address];
-   always @(posedge clk)
-     if (write) memory[address] = data_in;
+   always @(posedge clk) begin
+      if (write) begin
+         memory[address] = data_in;
+      end
+   end
 
 endmodule
