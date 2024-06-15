@@ -36,24 +36,39 @@ module instruction_fetch_tb;
       branch_target = 32'b0;
       branch_taken = 0;
 
+      // load the instruction memory
+      uut.instruction_memory[0] = 32'h11111111;
+      uut.instruction_memory[1] = 32'h22222222;
+      uut.instruction_memory[2] = 32'h33333333;
+      uut.instruction_memory[3] = 32'h44444444;
+      uut.instruction_memory[4] = 32'h55555555;
+      uut.instruction_memory[5] = 32'h66666666;
+      uut.instruction_memory[6] = 32'h77777777;
+      uut.instruction_memory[7] = 32'h88888888;
+      uut.instruction_memory[8] = 32'h99999999;
+      uut.instruction_memory[9] = 32'hAAAAAAAA;
+      uut.instruction_memory[10] = 32'hBBBBBBBB;
+      uut.instruction_memory[11] = 32'hCCCCCCCC;
+
       #10;
       reset = 0;
 
-      #50;
+      #20;
 
-      branch_target = 32'h00000010;
+      branch_target = 32'h00000000;
       branch_taken = 1;
       #10;
       branch_taken = 0;
 
-      #50;
 
-      branch_target = 32'h00000020;
-      branch_taken = 1;
-      #10;
-      branch_taken = 0;
+      #30;
 
-      #50;
+      // branch_target = 32'h00000020;
+      // branch_taken = 1;
+      // #10;
+      // branch_taken = 0;
+
+      // #50;
 
       $stop;
    end
