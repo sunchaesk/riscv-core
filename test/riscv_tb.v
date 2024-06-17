@@ -108,9 +108,6 @@ module riscv_tb;
    end
 
    initial begin
-      // preset the values of the registers
-      core.register_file_unit.reg_array[5] = 32'h00000001;
-      core.register_file_unit.reg_array[6] = 32'h00000002;
 
       // load instructions manually
       core.instruction_fetch_unit.instruction_memory[0] = 32'h005303b3; // ADD t2, t1, t0
@@ -149,7 +146,11 @@ module riscv_tb;
       reset = 1;
       #10;
       reset = 0;
+      #10;
 
+      // preset the values of the registers
+      core.register_file_unit.reg_array[5] = 32'h00000001;
+      core.register_file_unit.reg_array[6] = 32'h00000002;
       #50;
 
       $display("===PRINTING REGISTER CONTENTS===");
