@@ -1,4 +1,3 @@
-
 module control (
                 input [6:0]      opcode,
                 input [2:0]      funct3,
@@ -30,6 +29,4 @@ module control (
         end
       endcase
    end
-
-
 endmodule

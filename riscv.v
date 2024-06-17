@@ -19,6 +19,20 @@ module riscv_processor (
    reg [4:0]                          rs2;
    reg [31:0]                         imm;
 
+   // control unit
+   reg [3:0]                          alu_control;
+   reg                                regwrite_control;
+
+   // alu
+   reg [31:0]                         alu_result;
+   reg                                zero_flag;
+
+   // register file unit
+   reg [31:0]                         read_data1;
+   reg [31:0]                         read_data2;
+
+
+
    IFU instruction_fetch_unit (
                                .clk(clk),
                                .reset(reset),
@@ -39,7 +53,33 @@ module riscv_processor (
                         .imm(imm)
                         );
 
+   control control_unit (
+                         .opcode(opcode),
+                         .funct3(funct3),
+                         .funct7(funct7),
+                         .alu_control(alu_control),
+                         .regwrite_control(regwrite_control)
+                         );
 
+   ALU arithmetic_logic_unit(
+                             .in_a(read_data1),
+                             .in_b(read_data2),
+                             .alu_control(alu_control),
+                             .alu_result(alu_result),
+                             .zero_flag(zero_flag)
+                             );
+
+   register_file register_file_unit (
+                                     .clk(clk),
+                                     .reset(reset),
+                                     .read_reg1(rs1),
+                                     .read_reg2(rs2),
+                                     .write_reg(rd),
+                                     .write_data(alu_result),
+                                     .reg_write(regwrite_control),
+                                     .read_data1(read_data1),
+                                     .read_data2(read_data2)
+                                     );
 
    // assign output ports
    assign pc_out = pc;
