@@ -1,9 +1,11 @@
+// NOTE: imm_control is used for whether immediate should be used
 module control (
                 input [6:0]      opcode,
                 input [2:0]      funct3,
                 input [6:0]      funct7,
                 output reg [3:0] alu_control,
-                output reg       regwrite_control
+                output reg       regwrite_control,
+                output reg       imm_control
                 );
 
    always @(*) begin
@@ -13,6 +15,7 @@ module control (
       case(opcode)
         7'b0110011: begin // R-Type
            regwrite_control = 1;
+           imm_control = 0;
            case({funct7[5], funct3})
              4'b0000: alu_control = 4'b0010; // ADD
              4'b1000: alu_control = 4'b0100; // SUB
@@ -29,6 +32,7 @@ module control (
         end
         7'b0010011: begin // I-Type
            regwrite_control = 1;
+           imm_control = 1;
            case({funct7[5], funct3})
              4'b0000: alu_control = 4'b0010; // ADDI
              4'b0001: alu_control = 4'b0011; // SLLI

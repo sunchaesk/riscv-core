@@ -24,6 +24,7 @@ module riscv_processor (
    // control unit
    reg [3:0]                          alu_control;
    reg                                regwrite_control;
+   reg                                imm_control;
 
    // alu
    reg [31:0]                         alu_result;
@@ -34,6 +35,12 @@ module riscv_processor (
    reg [31:0]                         read_data2;
 
 
+   /////// Intermediates
+   wire [31:0]                         operand_a;
+   wire [31:0]                         operand_b;
+
+   assign operand_a = read_data1;
+   assign operand_b = (imm_control) ? imm : read_data2;
 
    IFU instruction_fetch_unit (
                                .clk(clk),
@@ -61,12 +68,13 @@ module riscv_processor (
                          .funct3(funct3),
                          .funct7(funct7),
                          .alu_control(alu_control),
-                         .regwrite_control(regwrite_control)
+                         .regwrite_control(regwrite_control),
+                         .imm_control(imm_control)
                          );
 
    ALU arithmetic_logic_unit(
-                             .in_a(read_data1),
-                             .in_b(read_data2),
+                             .in_a(operand_a),
+                             .in_b(operand_b),
                              .alu_control(alu_control),
                              .alu_result(alu_result),
                              .zero_flag(zero_flag)

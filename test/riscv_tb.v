@@ -108,6 +108,57 @@ module riscv_tb;
       forever #5 clk = ~clk;
    end
 
+   // TEST for I-Type -> immediate instructions
+   initial begin
+
+      // load instructions manually
+      core.instruction_fetch_unit.instruction_memory[0] = 32'h00a28393; // ADDI t2, x5, 10
+      core.instruction_fetch_unit.instruction_memory[1] = 32'h00436613; // ORI a2, t1, 4
+
+      $monitor("Time = %0t\nPC = 0x%0h\nINSTRUCTION = 0x%0h\nOPCODE = 0x%0h\nFUNCT3 = 0x%0h\nFUNCT7 = 0x%0h\nRD = 0x%0h\nRS1 = 0x%0h\nRS2 = 0x%0h\nIMM = 0x%0h\nALU_CONTROL = 0x%0h\nREGWRITE_CONTROL = 0x%0h\nALU_RESULT = 0x%0h\nZERO_FLAG = 0x%0h\nREAD_DATA1 = 0x%0h\nREAD_DATA2 = 0x%0h\n\n",
+               $time, d_pc, d_instruction, d_opcode, d_funct3, d_funct7, d_rd, d_rs1, d_rs2, d_imm, d_alu_control, d_regwrite_control, d_alu_result, d_zero_flag, d_read_data1, d_read_data2);
+
+
+      $display("===PRINTING INSTRUCTION MEMORY===");
+      for (i = 0; i < 256; i = i + 1) begin
+         if (core.instruction_fetch_unit.instruction_memory[i] != 0) begin
+            $display("REG: x%d = 0x%0h", i, core.instruction_fetch_unit.instruction_memory[i]);
+         end
+      end
+      $display("===DONE PRINTING INSTRUCTION MEMORY===\n");
+
+      $display("===PRINTING REGISTER CONTENTS===");
+      for (i = 0; i < 32; i = i + 1) begin
+         if (core.register_file_unit.reg_array[i] != 0) begin
+            $display("REG: x%d = 0x%0h", i, core.register_file_unit.reg_array[i]);
+         end
+      end
+      $display("===DONE PRINTING REGISTER CONTENTS===\n");
+
+      reset = 1;
+      #10;
+      reset = 0;
+      #10;
+
+      // preset register values
+      core.register_file_unit.reg_array[5] = 32'h00000001;
+      core.register_file_unit.reg_array[6] = 32'h00000002;
+
+      #50;
+
+      $display("===PRINTING REGISTER CONTENTS===");
+      for (i = 0; i < 32; i = i + 1) begin
+         if (core.register_file_unit.reg_array[i] != 0) begin
+            $display("REG: x%d = 0x%0h", i, core.register_file_unit.reg_array[i]);
+         end
+      end
+      $display("===DONE PRINTING REGISTER CONTENTS===\n");
+
+      $stop;
+   end
+
+
+   /* TEST for R-Type INST
    initial begin
 
       // load instructions manually
@@ -164,6 +215,6 @@ module riscv_tb;
 
       $stop;
    end
-   
+    */
 
 endmodule
