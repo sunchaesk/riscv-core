@@ -27,6 +27,21 @@ module control (
              default: alu_control = 4'b1111; // default value set to 1111
            endcase
         end
+        7'b0010011: begin // I-Type
+           regwrite_control = 1;
+           case({funct7[5], funct3})
+             4'b0000: alu_control = 4'b0010; // ADDI
+             4'b0001: alu_control = 4'b0011; // SLLI
+             4'b0010: alu_control = 4'b1000; // SLTI
+             4'b0011: alu_control = 4'b0110; // SLTUI
+             4'b0100: alu_control = 4'b0111; // XORI
+             4'b0101: alu_control = 4'b0101; // SRLI
+             4'b1101: alu_control = 4'b1001; // SRAI
+             4'b0110: alu_control = 4'b0001; // ORI
+             4'b0111: alu_control = 4'b0000; // ANDI
+             default: alu_control = 4'b1111; // default value
+           endcase
+        end
       endcase
    end
 endmodule

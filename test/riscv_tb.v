@@ -1,5 +1,6 @@
 `timescale 1ns / 1ps
 
+// testing for R instruction
 /*
  Registers:
  x0 = zero

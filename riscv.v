@@ -18,6 +18,8 @@ module riscv_processor (
    reg [4:0]                          rs1;
    reg [4:0]                          rs2;
    reg [31:0]                         imm;
+   reg [2:0]                          imm_type;
+
 
    // control unit
    reg [3:0]                          alu_control;
@@ -50,7 +52,8 @@ module riscv_processor (
                         .rd(rd),
                         .rs1(rs1),
                         .rs2(rs2),
-                        .imm(imm)
+                        .imm(imm),
+                        .imm_type(imm_type)
                         );
 
    control control_unit (
