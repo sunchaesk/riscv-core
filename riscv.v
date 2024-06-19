@@ -25,10 +25,18 @@ module riscv_processor (
    reg [3:0]                          alu_control;
    reg                                regwrite_control;
    reg                                imm_control;
+   reg                                mem_read_control;
+   reg                                mem_write_control;
+
 
    // alu
    reg [31:0]                         alu_result;
    reg                                zero_flag;
+
+   // memory
+   reg [31:0]                         mem_data_in;
+   reg [31:0]                         address;
+   reg [31:0]                         mem_data_out;
 
    // register file unit
    reg [31:0]                         read_data1;
@@ -69,7 +77,9 @@ module riscv_processor (
                          .funct7(funct7),
                          .alu_control(alu_control),
                          .regwrite_control(regwrite_control),
-                         .imm_control(imm_control)
+                         .imm_control(imm_control),
+                         .mem_read_control(mem_read_control),
+                         .mem_write_control(mem_write_control)
                          );
 
    ALU arithmetic_logic_unit(
@@ -79,6 +89,17 @@ module riscv_processor (
                              .alu_result(alu_result),
                              .zero_flag(zero_flag)
                              );
+
+   memory #( .MEMORY_SIZE(256) ) memory_unit (
+                                              .clk(clk),
+                                              .reset(reset),
+                                              .mem_read_control(mem_read_control),
+                                              .mem_write_control(mem_write_control),
+                                              .mem_data_in(data_in),
+                                              .address(address),
+                                              .mem_data_out(data_out)
+                                              );
+
 
    register_file register_file_unit (
                                      .clk(clk),

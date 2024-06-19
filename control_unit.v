@@ -5,17 +5,23 @@ module control (
                 input [6:0]      funct7,
                 output reg [3:0] alu_control,
                 output reg       regwrite_control,
-                output reg       imm_control
+                output reg       imm_control,
+                output reg       mem_read_control,
+                output reg       mem_write_control
                 );
 
    always @(*) begin
       alu_control = 4'b1111; // default value
       regwrite_control = 1'b0;
-
+      mem_read_control = 1'b0;
+      mem_write_control = 1'b0;
+      imm_control = 1'b0;
       case(opcode)
         7'b0110011: begin // R-Type
            regwrite_control = 1;
            imm_control = 0;
+           mem_read_control = 0;
+           mem_write_control = 0;
            case({funct7[5], funct3})
              4'b0000: alu_control = 4'b0010; // ADD
              4'b1000: alu_control = 4'b0100; // SUB
@@ -33,6 +39,8 @@ module control (
         7'b0010011: begin // I-Type
            regwrite_control = 1;
            imm_control = 1;
+           mem_read_control = 0;
+           mem_write_control = 0;
            case({funct7[5], funct3})
              4'b0000: alu_control = 4'b0010; // ADDI
              4'b0001: alu_control = 4'b0011; // SLLI
@@ -44,6 +52,17 @@ module control (
              4'b0110: alu_control = 4'b0001; // ORI
              4'b0111: alu_control = 4'b0000; // ANDI
              default: alu_control = 4'b1111; // default value
+           endcase
+        end
+        7'b0000011: begin // Load instructions
+           regwrite = 1;
+           imm_control = 1;
+           case(funct3)
+             3'b000,
+             3'b001,
+             3'b010,
+             3'b100,
+             3'b101: alu_control = 4'b1111;
            endcase
         end
       endcase

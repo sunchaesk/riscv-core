@@ -2,6 +2,9 @@
 # Manual: http://gtkwave.sourceforge.net/gtkwave.pdf#Appendix-E-Tcl-Command-Syntax
 # Also see the GTKWave source code file: examples/des.tcl
 
+# remove all signals
+# gtkwave::/Edit/Remove_All_Instances
+
 # Add all signals
 set nfacs [ gtkwave::getNumFacs ]
 set all_facs [list]
