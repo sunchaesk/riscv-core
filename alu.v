@@ -33,6 +33,7 @@ module ALU (
         4'b0110: alu_result = ($unsigned(in_a) < $unsigned(in_b)) ? 32'b1 : 32'b0;  // SLTU
         4'b0111: alu_result = in_a ^ in_b; // XOR
         4'b1001: alu_result = in_a >>> in_b; // SRA
+        default: alu_result = 32'b0; // if the ALU is not being used
       endcase
 
       if (alu_result == 0)

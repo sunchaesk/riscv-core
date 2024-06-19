@@ -57,6 +57,8 @@ module control (
         7'b0000011: begin // Load instructions
            regwrite = 1;
            imm_control = 1;
+           mem_read_control = 0;
+           mem_write_control = 1;
            case(funct3)
              3'b000,
              3'b001,
