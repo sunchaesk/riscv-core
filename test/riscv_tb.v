@@ -52,22 +52,31 @@ module riscv_tb;
    wire [31:0] d_pc;
    wire [31:0] d_instruction;
 
-   wire [6:0]                          d_opcode;
-   wire [2:0]                          d_funct3;
-   wire [6:0]                          d_funct7;
-   wire [4:0]                          d_rd;
-   wire [4:0]                          d_rs1;
-   wire [4:0]                          d_rs2;
-   wire [31:0]                         d_imm;
+   wire [6:0]  d_opcode;
+   wire [2:0]  d_funct3;
+   wire [6:0]  d_funct7;
+   wire [4:0]  d_rd;
+   wire [4:0]  d_rs1;
+   wire [4:0]  d_rs2;
+   wire [31:0] d_imm;
 
-   wire [3:0]                          d_alu_control;
-   wire                                d_regwrite_control;
+   wire [3:0]  d_alu_control;
+   wire        d_regwrite_control;
 
-   wire [31:0]                         d_alu_result;
-   wire                                d_zero_flag;
+   wire [31:0] d_alu_result;
+   wire        d_zero_flag;
 
-   wire [31:0]                         d_read_data1;
-   wire [31:0]                         d_read_data2;
+   wire [31:0] d_mem_data_in;
+   wire [31:0] d_mem_address;
+   wire [31:0] d_mem_data_out;
+
+   wire [31:0] d_read_data1;
+   wire [31:0] d_read_data2;
+
+   wire [31:0] d_reg_write_data;
+
+   wire [31:0] d_operand_a;
+   wire [31:0] d_opreand_b;
 
 
    assign d_pc = core.pc;
@@ -87,8 +96,18 @@ module riscv_tb;
    assign d_alu_result = core.alu_result;
    assign d_zero_flag = core.zero_flag;
 
+   assign d_mem_data_in = core.mem_data_in;
+   assign d_mem_address = core.mem_address;
+   assign d_mem_data_out = core.mem_data_out;
+
    assign d_read_data1 = core.read_data1;
    assign d_read_data2 = core.read_data2;
+
+   assign d_reg_write_data = core.reg_write_data;
+
+   assign d_operand_a = core.operand_a;
+   assign d_operand_b = core.operand_b;
+
 
    riscv_processor core (
                          .clk(clk),
@@ -108,16 +127,17 @@ module riscv_tb;
       forever #5 clk = ~clk;
    end
 
-   // TEST for I-Type -> immediate instructions
+
+   // TEST for load instructions (I type)
    initial begin
 
-      // load instructions manually
-      core.instruction_fetch_unit.instruction_memory[0] = 32'h00a28393; // ADDI t2, x5, 10
-      core.instruction_fetch_unit.instruction_memory[1] = 32'h00436613; // ORI a2, t1, 4
+      // load instructions
+      core.instruction_fetch_unit.instruction_memory[0] = 32'h0002a303; //  lw x6, 0(x5)
+      core.instruction_fetch_unit.instruction_memory[1] = 32'h00c28383; // lb x7, 12(x5)
+      core.instruction_fetch_unit.instruction_memory[2] = 32'h00450403; // lb x8, 4(x10)
 
-      $monitor("Time = %0t\nPC = 0x%0h\nINSTRUCTION = 0x%0h\nOPCODE = 0x%0h\nFUNCT3 = 0x%0h\nFUNCT7 = 0x%0h\nRD = 0x%0h\nRS1 = 0x%0h\nRS2 = 0x%0h\nIMM = 0x%0h\nALU_CONTROL = 0x%0h\nREGWRITE_CONTROL = 0x%0h\nALU_RESULT = 0x%0h\nZERO_FLAG = 0x%0h\nREAD_DATA1 = 0x%0h\nREAD_DATA2 = 0x%0h\n\n",
-               $time, d_pc, d_instruction, d_opcode, d_funct3, d_funct7, d_rd, d_rs1, d_rs2, d_imm, d_alu_control, d_regwrite_control, d_alu_result, d_zero_flag, d_read_data1, d_read_data2);
-
+      $monitor("Time = %0t\nPC = 0x%0h\nINSTRUCTION = 0x%0h\nOPCODE = 0x%0h\nFUNCT3 = 0x%0h\nFUNCT7 = 0x%0h\nRD = 0x%0h\nRS1 = 0x%0h\nRS2 = 0x%0h\nIMM = 0x%0h\nALU_CONTROL = 0x%0h\nREGWRITE_CONTROL = 0x%0h\nALU_RESULT = 0x%0h\nZERO_FLAG = 0x%0h\nMEM_DATA_IN = 0x%0h\nMEM_ADDRESS = 0x%0h\nMEM_DATA_OUT = 0x%0h\nREAD_DATA1 = 0x%0h\nREAD_DATA2 = 0x%0h\nREG_WRITE_DATA = 0x%0h\nOPERAND_A = 0x%0h\nOPERAND_B = 0x%0h\n\n",
+               $time, d_pc, d_instruction, d_opcode, d_funct3, d_funct7, d_rd, d_rs1, d_rs2, d_imm, d_alu_control, d_regwrite_control, d_alu_result, d_zero_flag, d_mem_data_in, d_mem_address, d_mem_data_out, d_read_data1, d_read_data2, d_reg_write_data, d_operand_a, d_operand_b);
 
       $display("===PRINTING INSTRUCTION MEMORY===");
       for (i = 0; i < 256; i = i + 1) begin
@@ -127,6 +147,13 @@ module riscv_tb;
       end
       $display("===DONE PRINTING INSTRUCTION MEMORY===\n");
 
+      reset = 1;
+      #10;
+      reset = 0;
+      #10;
+
+      // load register values
+      // print register values
       $display("===PRINTING REGISTER CONTENTS===");
       for (i = 0; i < 32; i = i + 1) begin
          if (core.register_file_unit.reg_array[i] != 0) begin
@@ -135,17 +162,33 @@ module riscv_tb;
       end
       $display("===DONE PRINTING REGISTER CONTENTS===\n");
 
-      reset = 1;
-      #10;
-      reset = 0;
-      #10;
+      // load memory values
+      core.memory_unit.memory[0] = 32'h11111111;
+      core.memory_unit.memory[1] = 32'h22222222;
+      core.memory_unit.memory[2] = 32'h33333333;
+      core.memory_unit.memory[3] = 32'h44444444;
+      core.memory_unit.memory[4] = 32'h55555555;
+      core.memory_unit.memory[5] = 32'h66666666;
+      core.memory_unit.memory[6] = 32'h77777777;
+      core.memory_unit.memory[7] = 32'h88888888;
+      core.memory_unit.memory[8] = 32'h99999999;
+      core.memory_unit.memory[9] = 32'hAAAAAAAA;
+      core.memory_unit.memory[10] = 32'hBBBBBBBB;
+      core.memory_unit.memory[11] = 32'hCCCCCCCC;
+      core.memory_unit.memory[12] = 32'hDDDDDDDD;
+      core.memory_unit.memory[13] = 32'hEEEEEEEE;
+      // print memory values
+      $display("===PRINTING MEMORY VALUES===");
+      for (i = 0; i < 256; i = i + 1) begin
+         if (core.memory_unit.memory[i] != 0) begin
+            $display("MEMORY [%d] = 0x%0h", i, core.memory_unit.memory[i]);
+         end
+      end
 
-      // preset register values
-      core.register_file_unit.reg_array[5] = 32'h00000001;
-      core.register_file_unit.reg_array[6] = 32'h00000002;
-
+      // let the CPU run for a bit
       #50;
 
+      // check values of the register
       $display("===PRINTING REGISTER CONTENTS===");
       for (i = 0; i < 32; i = i + 1) begin
          if (core.register_file_unit.reg_array[i] != 0) begin
@@ -157,63 +200,113 @@ module riscv_tb;
       $stop;
    end
 
+   // TEST for I-Type -> immediate instructions
+   /*
+    initial begin
+
+    // load instructions manually
+    core.instruction_fetch_unit.instruction_memory[0] = 32'h00a28393; // ADDI t2, x5, 10
+    core.instruction_fetch_unit.instruction_memory[1] = 32'h00436613; // ORI a2, t1, 4
+
+    $monitor("Time = %0t\nPC = 0x%0h\nINSTRUCTION = 0x%0h\nOPCODE = 0x%0h\nFUNCT3 = 0x%0h\nFUNCT7 = 0x%0h\nRD = 0x%0h\nRS1 = 0x%0h\nRS2 = 0x%0h\nIMM = 0x%0h\nALU_CONTROL = 0x%0h\nREGWRITE_CONTROL = 0x%0h\nALU_RESULT = 0x%0h\nZERO_FLAG = 0x%0h\nREAD_DATA1 = 0x%0h\nREAD_DATA2 = 0x%0h\n\n",
+    $time, d_pc, d_instruction, d_opcode, d_funct3, d_funct7, d_rd, d_rs1, d_rs2, d_imm, d_alu_control, d_regwrite_control, d_alu_result, d_zero_flag, d_read_data1, d_read_data2);
+
+
+    $display("===PRINTING INSTRUCTION MEMORY===");
+    for (i = 0; i < 256; i = i + 1) begin
+    if (core.instruction_fetch_unit.instruction_memory[i] != 0) begin
+    $display("REG: x%d = 0x%0h", i, core.instruction_fetch_unit.instruction_memory[i]);
+         end
+      end
+    $display("===DONE PRINTING INSTRUCTION MEMORY===\n");
+
+    $display("===PRINTING REGISTER CONTENTS===");
+    for (i = 0; i < 32; i = i + 1) begin
+    if (core.register_file_unit.reg_array[i] != 0) begin
+    $display("REG: x%d = 0x%0h", i, core.register_file_unit.reg_array[i]);
+         end
+      end
+    $display("===DONE PRINTING REGISTER CONTENTS===\n");
+
+    reset = 1;
+    #10;
+    reset = 0;
+    #10;
+
+    // preset register values
+    core.register_file_unit.reg_array[5] = 32'h00000001;
+    core.register_file_unit.reg_array[6] = 32'h00000002;
+
+    #50;
+
+    $display("===PRINTING REGISTER CONTENTS===");
+    for (i = 0; i < 32; i = i + 1) begin
+    if (core.register_file_unit.reg_array[i] != 0) begin
+    $display("REG: x%d = 0x%0h", i, core.register_file_unit.reg_array[i]);
+         end
+      end
+    $display("===DONE PRINTING REGISTER CONTENTS===\n");
+
+    $stop;
+   end
+    */
 
    /* TEST for R-Type INST
-   initial begin
+    initial begin
 
-      // load instructions manually
-      core.instruction_fetch_unit.instruction_memory[0] = 32'h005303b3; // ADD t2, t1, t0
-      core.instruction_fetch_unit.instruction_memory[1] = 32'h00628633; // ADD a2, t0, t1
-      // core.instruction_fetch_unit.instruction_memory[2] = 32'h33333333;
-      // core.instruction_fetch_unit.instruction_memory[3] = 32'h44444444;
-      // core.instruction_fetch_unit.instruction_memory[4] = 32'h55555555;
-      // core.instruction_fetch_unit.instruction_memory[5] = 32'h66666666;
-      // core.instruction_fetch_unit.instruction_memory[6] = 32'h77777777;
-      // core.instruction_fetch_unit.instruction_memory[7] = 32'h88888888;
-      // core.instruction_fetch_unit.instruction_memory[8] = 32'h99999999;
-      // core.instruction_fetch_unit.instruction_memory[9] = 32'hAAAAAAAA;
-      // core.instruction_fetch_unit.instruction_memory[10] = 32'hBBBBBBBB;
-      // core.instruction_fetch_unit.instruction_memory[11] = 32'hCCCCCCCC;
+    // load instructions manually
+    core.instruction_fetch_unit.instruction_memory[0] = 32'h005303b3; // ADD t2, t1, t0
+    core.instruction_fetch_unit.instruction_memory[1] = 32'h00628633; // ADD a2, t0, t1
+    // core.instruction_fetch_unit.instruction_memory[2] = 32'h33333333;
+    // core.instruction_fetch_unit.instruction_memory[3] = 32'h44444444;
+    // core.instruction_fetch_unit.instruction_memory[4] = 32'h55555555;
+    // core.instruction_fetch_unit.instruction_memory[5] = 32'h66666666;
+    // core.instruction_fetch_unit.instruction_memory[6] = 32'h77777777;
+    // core.instruction_fetch_unit.instruction_memory[7] = 32'h88888888;
+    // core.instruction_fetch_unit.instruction_memory[8] = 32'h99999999;
+    // core.instruction_fetch_unit.instruction_memory[9] = 32'hAAAAAAAA;
+    // core.instruction_fetch_unit.instruction_memory[10] = 32'hBBBBBBBB;
+    // core.instruction_fetch_unit.instruction_memory[11] = 32'hCCCCCCCC;
 
-      $monitor("Time = %0t\nPC = 0x%0h\nINSTRUCTION = 0x%0h\nOPCODE = 0x%0h\nFUNCT3 = 0x%0h\nFUNCT7 = 0x%0h\nRD = 0x%0h\nRS1 = 0x%0h\nRS2 = 0x%0h\nIMM = 0x%0h\nALU_CONTROL = 0x%0h\nREGWRITE_CONTROL = 0x%0h\nALU_RESULT = 0x%0h\nZERO_FLAG = 0x%0h\nREAD_DATA1 = 0x%0h\nREAD_DATA2 = 0x%0h\n\n",
-               $time, d_pc, d_instruction, d_opcode, d_funct3, d_funct7, d_rd, d_rs1, d_rs2, d_imm, d_alu_control, d_regwrite_control, d_alu_result, d_zero_flag, d_read_data1, d_read_data2);
+    $monitor("Time = %0t\nPC = 0x%0h\nINSTRUCTION = 0x%0h\nOPCODE = 0x%0h\nFUNCT3 = 0x%0h\nFUNCT7 = 0x%0h\nRD = 0x%0h\nRS1 = 0x%0h\nRS2 = 0x%0h\nIMM = 0x%0h\nALU_CONTROL = 0x%0h\nREGWRITE_CONTROL = 0x%0h\nALU_RESULT = 0x%0h\nZERO_FLAG = 0x%0h\nREAD_DATA1 = 0x%0h\nREAD_DATA2 = 0x%0h\n\n",
+    $time, d_pc, d_instruction, d_opcode, d_funct3, d_funct7, d_rd, d_rs1, d_rs2, d_imm, d_alu_control, d_regwrite_control, d_alu_result, d_zero_flag, d_read_data1, d_read_data2);
 
 
-      $display("===PRINTING INSTRUCTION MEMORY===");
-      for (i = 0; i < 256; i = i + 1) begin
-         if (core.instruction_fetch_unit.instruction_memory[i] != 0) begin
-            $display("REG: x%d = 0x%0h", i, core.instruction_fetch_unit.instruction_memory[i]);
+    $display("===PRINTING INSTRUCTION MEMORY===");
+    for (i = 0; i < 256; i = i + 1) begin
+    if (core.instruction_fetch_unit.instruction_memory[i] != 0) begin
+    $display("REG: x%d = 0x%0h", i, core.instruction_fetch_unit.instruction_memory[i]);
          end
       end
-      $display("===DONE PRINTING INSTRUCTION MEMORY===\n");
+    $display("===DONE PRINTING INSTRUCTION MEMORY===\n");
 
-      $display("===PRINTING REGISTER CONTENTS===");
-      for (i = 0; i < 32; i = i + 1) begin
-         if (core.register_file_unit.reg_array[i] != 0) begin
-            $display("REG: x%d = 0x%0h", i, core.register_file_unit.reg_array[i]);
+    $display("===PRINTING REGISTER CONTENTS===");
+    for (i = 0; i < 32; i = i + 1) begin
+    if (core.register_file_unit.reg_array[i] != 0) begin
+    $display("REG: x%d = 0x%0h", i, core.register_file_unit.reg_array[i]);
          end
       end
-      $display("===DONE PRINTING REGISTER CONTENTS===\n");
+    $display("===DONE PRINTING REGISTER CONTENTS===\n");
 
-      reset = 1;
-      #10;
-      reset = 0;
-      #10;
+    reset = 1;
+    #10;
+    reset = 0;
+    #10;
 
-      // preset the values of the registers
-      core.register_file_unit.reg_array[5] = 32'h00000001;
-      core.register_file_unit.reg_array[6] = 32'h00000002;
-      #50;
+    // preset the values of the registers
+    core.register_file_unit.reg_array[5] = 32'h00000001;
+    core.register_file_unit.reg_array[6] = 32'h00000002;
+    #50;
 
-      $display("===PRINTING REGISTER CONTENTS===");
-      for (i = 0; i < 32; i = i + 1) begin
-         if (core.register_file_unit.reg_array[i] != 0) begin
-            $display("REG: x%d = 0x%0h", i, core.register_file_unit.reg_array[i]);
+    $display("===PRINTING REGISTER CONTENTS===");
+    for (i = 0; i < 32; i = i + 1) begin
+    if (core.register_file_unit.reg_array[i] != 0) begin
+    $display("REG: x%d = 0x%0h", i, core.register_file_unit.reg_array[i]);
          end
       end
-      $display("===DONE PRINTING REGISTER CONTENTS===\n");
+    $display("===DONE PRINTING REGISTER CONTENTS===\n");
 
-      $stop;
+    $stop;
    end
     */
 

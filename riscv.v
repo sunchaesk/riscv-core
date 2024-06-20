@@ -35,20 +35,28 @@ module riscv_processor (
 
    // memory
    reg [31:0]                         mem_data_in;
-   reg [31:0]                         address;
+   reg [31:0]                         mem_address;
    reg [31:0]                         mem_data_out;
 
    // register file unit
    reg [31:0]                         read_data1;
    reg [31:0]                         read_data2;
 
+   wire [31:0]                         reg_write_data;
 
    /////// Intermediates
-   wire [31:0]                         operand_a;
-   wire [31:0]                         operand_b;
+   wire [31:0]                        operand_a;
+   wire [31:0]                        operand_b;
 
+   // ALU inputs
    assign operand_a = read_data1;
    assign operand_b = (imm_control) ? imm : read_data2;
+
+   // memory inputs (load)
+   assign mem_address = alu_result; // in this case the alu_result will be rs1 + imm (offset)
+
+   assign reg_write_data = (mem_read_control) ? mem_data_out : alu_result;
+
 
    IFU instruction_fetch_unit (
                                .clk(clk),
@@ -95,9 +103,9 @@ module riscv_processor (
                                               .reset(reset),
                                               .mem_read_control(mem_read_control),
                                               .mem_write_control(mem_write_control),
-                                              .mem_data_in(data_in),
-                                              .address(address),
-                                              .mem_data_out(data_out)
+                                              .mem_data_in(mem_data_in),
+                                              .mem_address(mem_address),
+                                              .mem_data_out(mem_data_out)
                                               );
 
 
@@ -107,7 +115,7 @@ module riscv_processor (
                                      .read_reg1(rs1),
                                      .read_reg2(rs2),
                                      .write_reg(rd),
-                                     .write_data(alu_result),
+                                     .write_data(reg_write_data),
                                      .reg_write(regwrite_control),
                                      .read_data1(read_data1),
                                      .read_data2(read_data2)

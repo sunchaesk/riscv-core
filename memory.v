@@ -5,7 +5,7 @@ module memory (
                     input         mem_read_control,
                     input         mem_write_control,
                     input [31:0]  mem_data_in,
-                    input [31:0]  address,
+                    input [31:0]  mem_address,
                     output reg [31:0] mem_data_out
                     );
 
@@ -16,7 +16,7 @@ module memory (
    // memory read
    always @(*) begin
       if (mem_read_control) begin
-         mem_data_out = memory[address[31:2]];
+         mem_data_out = memory[mem_address[31:2]];
       end else begin
          mem_data_out = 32'b0;
       end
@@ -30,7 +30,7 @@ module memory (
             memory[i] <= 32'b0;
          end
       end else if (mem_write_control) begin
-         memory[address[31:2]] <= mem_data_in;
+         memory[mem_address[31:2]] <= mem_data_in;
       end
    end
 
