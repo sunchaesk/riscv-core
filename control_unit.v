@@ -64,7 +64,18 @@ module control (
              3'b001,
              3'b010,
              3'b100,
-             3'b101: alu_control = 4'b0010;
+             3'b101: alu_control = 4'b0010; // ADD
+           endcase
+        end
+        7'b0100011: begin // S instructions
+           regwrite_control = 0; // storing therefore, no register write required
+           imm_control = 1;
+           mem_read_control = 0;
+           mem_write_control = 1;
+           case(funct3)
+             3'b000,
+             3'b001,
+             3'b010: alu_control = 4'b0010; // ADD
            endcase
         end
       endcase

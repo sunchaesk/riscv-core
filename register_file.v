@@ -25,7 +25,7 @@ module register_file (
 
    always @(posedge clk) begin
       if (reg_write) begin
-         reg_array[write_reg] = write_data;
+         reg_array[write_reg] <= write_data;
       end
    end
 

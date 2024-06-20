@@ -32,6 +32,10 @@ module decoder(
            imm = {{20{instruction[31]}}, instruction[30:20]};
            imm_type = 3'b000; // load instructions have different opcodes but same imm_type code NOTE
         end
+        7'b0100011: begin// S-type
+           imm = {{20{instruction[31]}}, instruction[31:25], instruction[11:7]};
+           imm_type = 3'b001;
+        end
         7'b1100011: begin // B-type
            imm = {{19{instruction[31]}}, instruction[7], instruction[30:25], instruction[11:8], 1'b0};
            imm_type = 3'b010;

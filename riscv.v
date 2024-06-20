@@ -57,6 +57,8 @@ module riscv_processor (
 
    assign reg_write_data = (mem_read_control) ? mem_data_out : alu_result;
 
+   assign mem_data_in = read_data2;
+
 
    IFU instruction_fetch_unit (
                                .clk(clk),
