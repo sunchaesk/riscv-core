@@ -9,6 +9,7 @@ module riscv_processor (
    // pc stuff (IFU)
    reg [31:0]                         pc;
    reg [31:0]                         fetched_instruction;
+   reg                                branch_taken;
 
    // decoder initializes (decoder)
    reg [6:0]                          opcode;
@@ -27,6 +28,14 @@ module riscv_processor (
    reg                                imm_control;
    reg                                mem_read_control;
    reg                                mem_write_control;
+   reg                                branch_instruction_control;
+   reg [2:0]                          branch_type;
+
+   // branch_condition unit
+   reg                                branch_control;
+
+   // control unit -> branch_target
+   wire [31:0]                        branch_target;
 
 
    // alu
@@ -42,7 +51,7 @@ module riscv_processor (
    reg [31:0]                         read_data1;
    reg [31:0]                         read_data2;
 
-   wire [31:0]                         reg_write_data;
+   wire [31:0]                        reg_write_data;
 
    /////// Intermediates
    wire [31:0]                        operand_a;
@@ -52,19 +61,26 @@ module riscv_processor (
    assign operand_a = read_data1;
    assign operand_b = (imm_control) ? imm : read_data2;
 
-   // memory inputs (load)
+   // memory (load)
    assign mem_address = alu_result; // in this case the alu_result will be rs1 + imm (offset)
 
+   // memory (load)
    assign reg_write_data = (mem_read_control) ? mem_data_out : alu_result;
 
+   // memory (save to memory) (save)
    assign mem_data_in = read_data2;
 
+   // calculating branch_target
+   assign branch_target = pc + imm;
+
+   // calculate branch_taken
+   assign branch_taken = branch_control && branch_instruction_control;
 
    IFU instruction_fetch_unit (
                                .clk(clk),
                                .reset(reset),
-                               .branch_target(32'b0),
-                               .branch_taken(1'b0),
+                               .branch_target(branch_target),
+                               .branch_taken(branch_taken), // flag for whether to branch or not
                                .pc(pc),
                                .instruction(fetched_instruction)
                                );
@@ -89,8 +105,18 @@ module riscv_processor (
                          .regwrite_control(regwrite_control),
                          .imm_control(imm_control),
                          .mem_read_control(mem_read_control),
-                         .mem_write_control(mem_write_control)
+                         .mem_write_control(mem_write_control),
+                         .branch_instruction_control(branch_instruction_control),
+                         .branch_type(branch_type)
                          );
+
+   branch_condition branch_condition_unit (
+                                           .operand_a(read_data1),
+                                           .operand_b(read_data2),
+                                           .branch_type(branch_type),
+                                           .branch_control(branch_control)
+                                           );
+
 
    ALU arithmetic_logic_unit(
                              .in_a(operand_a),
