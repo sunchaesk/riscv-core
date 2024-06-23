@@ -153,14 +153,15 @@ module riscv_tb;
    initial begin
 
       // load instructions
-      // core.instruction_fetch_unit.instruction_memory[0] = 32'h00628663; // beq x5, x6, 12
-      core.instruction_fetch_unit.instruction_memory[0] = 32'h00628463; // beq x5, x6, 8
-      // core.instruction_fetch_unit.instruction_memory[1] = 32'h006282b3; // add x5, x5, x6
-      core.instruction_fetch_unit.instruction_memory[1] = 32'h00528293; // addi x5, x5, 5
-      core.instruction_fetch_unit.instruction_memory[2] = 32'h06430313; // addi x6, x6, 100
-      core.instruction_fetch_unit.instruction_memory[3] = 32'h00629863; // bne x5, x6, 16
-      core.instruction_fetch_unit.instruction_memory[4] = 32'h00728293; // addi x5, x5, 7
-      core.instruction_fetch_unit.instruction_memory[4] = 32'h00728293; // addi x5, x5, 7
+      core.instruction_fetch_unit.instruction_memory[1] = 32'h00628463; // beq x5, x6, 8
+      // core.instruction_fetch_unit.instruction_memory[1] = 32'h00528433; // add x8, x5, x5
+      // core.instruction_fetch_unit.instruction_memory[1] = 32'h00628663; // beq x5, x6, 12
+      // core.instruction_fetch_unit.instruction_memory[2] = 32'h006282b3; // add x5, x5, x6
+      core.instruction_fetch_unit.instruction_memory[2] = 32'h00528293; // addi x5, x5, 5
+      core.instruction_fetch_unit.instruction_memory[3] = 32'h06430313; // addi x6, x6, 100
+      core.instruction_fetch_unit.instruction_memory[4] = 32'h00629863; // bne x5, x6, 16
+      core.instruction_fetch_unit.instruction_memory[5] = 32'h00728293; // addi x5, x5, 7
+      core.instruction_fetch_unit.instruction_memory[6] = 32'h00728293; // addi x5, x5, 7
 
       $monitor("Time = %0t\nPC = 0x%0h\nINSTRUCTION = 0x%0h\nBRANCH_TAKEN = 0x%0h\nOPCODE = 0x%0h\nFUNCT3 = 0x%0h\nFUNCT7 = 0x%0h\nRD = 0x%0h\nRS1 = 0x%0h\nRS2 = 0x%0h\nIMM = 0x%0h\nIMM_TYPE = 0x%0h\nALU_CONTROL = 0x%0h\nREGWRITE_CONTROL = 0x%0h\nIMM_CONTROL = 0x%0h\nMEM_READ_CONTROL = 0x%0h\nMEM_WRITE_CONTROL = 0x%0h\nBRANCH_INSTRUCTION_CONTROL = 0x%0h\nBRANCH_TYPE = 0x%0h\nBRANCH_CONTROL = 0x%0h\nBRANCH_TARGET = 0x%0h\nALU_RESULT = 0x%0h\nZERO_FLAG = 0x%0h\nMEM_DATA_IN = 0x%0h\nMEM_ADDRESS = 0x%0h\nMEM_DATA_OUT = 0x%0h\nREAD_DATA1 = 0x%0h\nREAD_DATA2 = 0x%0h\nREG_WRITE_DATA = 0x%0h\nOPERAND_A = 0x%0h\nOPERAND_B = 0x%0h\n\n",
                $time, d_pc, d_instruction, d_branch_taken, d_opcode, d_funct3, d_funct7, d_rd, d_rs1, d_rs2, d_imm, d_imm_type, d_alu_control, d_regwrite_control, d_imm_control, d_mem_read_control, d_mem_write_control, d_branch_instruction_control, d_branch_type, d_branch_control, d_branch_target, d_alu_result, d_zero_flag, d_mem_data_in, d_mem_address, d_mem_data_out, d_read_data1, d_read_data2, d_reg_write_data, d_operand_a, d_operand_b);
