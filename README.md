@@ -1,5 +1,8 @@
 # RISCV-32
 
+## notes
+- due to details in the instruction_fetch.v (IFU), instruction should be loaded from the [1] index not the [0] index.
+
 ### ref
 https://riscv.org/wp-content/uploads/2017/05/riscv-spec-v2.2.pdf
 https://www.cs.sfu.ca/~ashriram/Courses/CS295/assets/notebooks/RISCV/RISCV_CARD.pdf
