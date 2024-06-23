@@ -10,6 +10,8 @@ module control (
                 output reg       mem_write_control,
                 output reg       branch_instruction_control,
                 output reg [2:0] branch_type
+                output reg       jal_control,
+                output reg       jalr_control,
                 );
 
    always @(*) begin
@@ -20,6 +22,8 @@ module control (
       imm_control = 1'b0;
       branch_instruction_control = 1'b0;
       branch_type = 3'b0;
+      jal_control = 1'b0;
+      jalr_control = 1'b0;
       case(opcode)
         7'b0110011: begin // R-Type
            regwrite_control = 1;
@@ -28,6 +32,8 @@ module control (
            mem_write_control = 0;
            branch_instruction_control = 0;
            branch_type = 3'b0;
+           jal_control = 0;
+           jalr_control = 0;
            case({funct7[5], funct3})
              4'b0000: alu_control = 4'b0010; // ADD
              4'b1000: alu_control = 4'b0100; // SUB
@@ -49,6 +55,8 @@ module control (
            mem_write_control = 0;
            branch_instruction_control = 0;
            branch_type = 3'b0;
+           jal_control = 0;
+           jalr_control = 0;
            case({funct7[5], funct3})
              4'b0000: alu_control = 4'b0010; // ADDI
              4'b0001: alu_control = 4'b0011; // SLLI
@@ -69,6 +77,8 @@ module control (
            mem_write_control = 0;
            branch_instruction_control = 0;
            branch_type = 3'b0;
+           jal_control = 0;
+           jalr_control = 0;
            case(funct3)
              3'b000,
              3'b001,
@@ -84,6 +94,8 @@ module control (
            mem_write_control = 1;
            branch_instruction_control = 0;
            branch_type = 3'b0;
+           jal_control = 0;
+           jalr_control = 0;
            case(funct3)
              3'b000,
              3'b001,
@@ -98,6 +110,30 @@ module control (
            branch_instruction_control = 1;
            branch_type = funct3;
            alu_control = 4'b1111; // default value
+           jal_control = 0;
+           jalr_control = 0;
+        end
+        7'b1101111: begin // JAL instruction
+           regwrite_control = 1;
+           imm_control = 1;
+           mem_read_control = 0;
+           mem_write_control = 0;
+           branch_instruction_control = 1;
+           branch_type = 3'b010; // branch_type for Jump instructions
+           alu_control = 4'b0010; // default value
+           jal_control = 1;
+           jalr_control = 0;
+        end
+        7'b1100111: begin // JALR instruction
+           regwrite_control = 1;
+           imm_control = 1;
+           mem_read_control = 0;
+           mem_write_control = 0;
+           branch_instruction_control = 1;
+           branch_type = 3'b010; // branch type for Jump instructions
+           alu_control = 4'b0010;
+           jal_control = 0;
+           jalr_control = 1;
         end
       endcase
    end

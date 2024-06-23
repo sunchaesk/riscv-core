@@ -4,16 +4,16 @@
 
  Two conditions are checked:
  - If the instruction itself is a branching instruction: Only opcode that corresponds to B-type instruction will eval as 1.
-   will turn the branch_instruction_control reg as 1
+ will turn the branch_instruction_control reg as 1
  - The actual branch condition is evaluated by the branch_condition unit.
-   This is either return the branch_control flag as 1 or 0
+ This is either return the branch_control flag as 1 or 0
 
  - Once both of these flags are evaluated, the branch_taken flag of the IFU which
-   determines whether the branch should happen is only turned on if both the
-   branch_instruction_control and branch_control flags are both 1.
-   - branch_taken = branch_control && branch_instruction_control
+ determines whether the branch should happen is only turned on if both the
+ branch_instruction_control and branch_control flags are both 1.
+ - branch_taken = branch_control && branch_instruction_control
 
-*/
+ */
 
 module branch_condition (
                          input [31:0] operand_a,

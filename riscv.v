@@ -30,6 +30,8 @@ module riscv_processor (
    reg                                mem_write_control;
    reg                                branch_instruction_control;
    reg [2:0]                          branch_type;
+   reg                                jal_control;
+   reg                                jalr_control;
 
    // branch_condition unit
    reg                                branch_control;
@@ -57,6 +59,11 @@ module riscv_processor (
    wire [31:0]                        operand_a;
    wire [31:0]                        operand_b;
 
+   wire                               jump_taken;
+   wire [31:0]                        jump_target;
+
+
+
    // ALU inputs
    assign operand_a = read_data1;
    assign operand_b = (imm_control) ? imm : read_data2;
@@ -65,7 +72,11 @@ module riscv_processor (
    assign mem_address = alu_result; // in this case the alu_result will be rs1 + imm (offset)
 
    // memory (load)
-   assign reg_write_data = (mem_read_control) ? mem_data_out : alu_result;
+   // assign reg_write_data = (mem_read_control) ? mem_data_out : alu_result;
+   assign reg_write_data = (mem_read_control) ? mem_data_out :
+                           (jump_taken) ? (pc + 4) :
+                           alu_result;
+
 
    // memory (save to memory) (save)
    assign mem_data_in = read_data2;
@@ -76,11 +87,18 @@ module riscv_processor (
    // calculate branch_taken
    assign branch_taken = branch_control && branch_instruction_control;
 
+   //// Jump instruction
+   assign jump_taken = (jal_control || jalr_control);
+   assign jump_target = jal_control ? (pc + imm) :
+                        (jalr_control ? (alu_result >> 2) : 32'b0);
+
    IFU instruction_fetch_unit (
                                .clk(clk),
                                .reset(reset),
                                .branch_target(branch_target),
                                .branch_taken(branch_taken), // flag for whether to branch or not
+                               .jump_target(jump_target),
+                               .jump_taken(jump_taken)
                                .pc(pc),
                                .instruction(fetched_instruction)
                                );
@@ -107,7 +125,9 @@ module riscv_processor (
                          .mem_read_control(mem_read_control),
                          .mem_write_control(mem_write_control),
                          .branch_instruction_control(branch_instruction_control),
-                         .branch_type(branch_type)
+                         .branch_type(branch_type),
+                         .jal_control(jal_control),
+                         .jalr_control(jalr_control)
                          );
 
    branch_condition branch_condition_unit (
@@ -126,6 +146,7 @@ module riscv_processor (
                              .zero_flag(zero_flag)
                              );
 
+   // RAM
    memory #( .MEMORY_SIZE(256) ) memory_unit (
                                               .clk(clk),
                                               .reset(reset),
