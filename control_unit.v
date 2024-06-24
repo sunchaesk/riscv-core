@@ -135,6 +135,28 @@ module control (
            jal_control = 0;
            jalr_control = 1;
         end
+        7'b0110111: begin // U-type LUI
+           regwrite_control = 1;
+           imm_control = 1;
+           mem_read_control = 0;
+           mem_write_control = 0;
+           branch_instruction_control = 0;
+           branch_type = 3'b0;
+           alu_control = 4'b1100;
+           jal_control = 0;
+           jalr_control = 0;
+        end
+        7'b0010111: begin // U-type AUIPC
+           regwrite_control = 1;
+           imm_control = 1;
+           mem_read_control = 0;
+           mem_write_control = 0;
+           branch_instruction_control = 0;
+           branch_type = 3'b0;
+           alu_control = 4'b1101;
+           jal_control = 0;
+           jalr_control = 0;
+        end
       endcase
    end
 endmodule

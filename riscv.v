@@ -65,7 +65,8 @@ module riscv_processor (
 
 
    // ALU inputs
-   assign operand_a = read_data1;
+   // assign operand_a = read_data1;
+   assign operand_a = (opcode == 7'b0010111) ? pc : read_data1; // AUIPC
    assign operand_b = (imm_control) ? imm : read_data2;
 
    // memory (load)

@@ -53,6 +53,11 @@ module decoder(
            imm = {{20{instruction[31]}}, instruction[30:20]};
            imm_type = 3'b000;
         end
+        7'b0110111,
+        7'b0010111: begin // U-type instruction
+           imm = {instruction[31:12], 12'b0};
+           imm_type = 3'b011;
+        end
       endcase
    end
 endmodule
