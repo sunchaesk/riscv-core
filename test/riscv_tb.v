@@ -160,12 +160,12 @@ module riscv_tb;
    end
 
 
-   // Test for LUI and AUIPC
-   initial begin
-
+   initial begin // ecall and ebreak testing
       // load instruction
-      core.instruction_fetch_unit.instruction_memory[1] = 32'h0dcba2b7;
-      core.instruction_fetch_unit.instruction_memory[2] = 32'h0dcba317;
+      core.instruction_fetch_unit.instruction_memory[1] = 32'h06428293; // addi x5, x5, 100
+      core.instruction_fetch_unit.instruction_memory[2] = 32'h00100073; // ebreak
+      core.instruction_fetch_unit.instruction_memory[3] = 32'h06428293; // addi x5, x5, 100
+      core.instruction_fetch_unit.instruction_memory[4] = 32'h06428293; // addi x5, x5, 100
 
       $display("===PRINTING INSTRUCTION MEMORY===");
       for (i = 0; i < 256; i = i + 1) begin
@@ -174,7 +174,6 @@ module riscv_tb;
          end
       end
       $display("===DONE PRINTING INSTRUCTION MEMORY===\n");
-
 
       // reset
       reset = 1;
@@ -193,7 +192,43 @@ module riscv_tb;
       $display("===DONE PRINTING REGISTER CONTENTS===\n");
 
       $stop;
+
    end
+
+   // Test for LUI and AUIPC
+   // initial begin
+
+   //    // load instruction
+   //    core.instruction_fetch_unit.instruction_memory[1] = 32'h0dcba2b7;
+   //    core.instruction_fetch_unit.instruction_memory[2] = 32'h0dcba317;
+
+   //    $display("===PRINTING INSTRUCTION MEMORY===");
+   //    for (i = 0; i < 256; i = i + 1) begin
+   //       if (core.instruction_fetch_unit.instruction_memory[i] != 0) begin
+   //          $display("INST-MEM: [%d] = 0x%0h", i, core.instruction_fetch_unit.instruction_memory[i]);
+   //       end
+   //    end
+   //    $display("===DONE PRINTING INSTRUCTION MEMORY===\n");
+
+
+   //    // reset
+   //    reset = 1;
+   //    #10;
+   //    reset = 0;
+   //    #10;
+
+   //    #50;
+
+   //    $display("===PRINTING REGISTER CONTENTS===");
+   //    for (i = 0; i < 32; i = i + 1) begin
+   //       if (core.register_file_unit.reg_array[i] != 0) begin
+   //          $display("REG: x%d = 0x%0h", i, core.register_file_unit.reg_array[i]);
+   //       end
+   //    end
+   //    $display("===DONE PRINTING REGISTER CONTENTS===\n");
+
+   //    $stop;
+   // end
 
    // Test for JALR instruction
    // initial begin

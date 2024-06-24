@@ -157,6 +157,9 @@ module control (
            jal_control = 0;
            jalr_control = 0;
         end
+        7'b1110011: begin // ecall and ebreak
+           $stop;
+        end
       endcase
    end
 endmodule
