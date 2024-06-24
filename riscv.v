@@ -90,7 +90,7 @@ module riscv_processor (
    //// Jump instruction
    assign jump_taken = (jal_control || jalr_control);
    assign jump_target = jal_control ? (pc + imm) :
-                        (jalr_control ? (alu_result >> 2) : 32'b0);
+                        (jalr_control ? alu_result : 32'b0);
 
    IFU instruction_fetch_unit (
                                .clk(clk),
@@ -98,7 +98,7 @@ module riscv_processor (
                                .branch_target(branch_target),
                                .branch_taken(branch_taken), // flag for whether to branch or not
                                .jump_target(jump_target),
-                               .jump_taken(jump_taken)
+                               .jump_taken(jump_taken),
                                .pc(pc),
                                .instruction(fetched_instruction)
                                );

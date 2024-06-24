@@ -4,7 +4,7 @@ module IFU (
             input wire [31:0] branch_target,
             input wire        branch_taken,
             input wire [31:0] jump_target,
-            input wire        jump_taken
+            input wire        jump_taken,
             output reg [31:0] pc,
             output reg [31:0] instruction
             );

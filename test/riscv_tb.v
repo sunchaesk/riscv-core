@@ -159,18 +159,17 @@ module riscv_tb;
       forever #5 clk = ~clk;
    end
 
-   // Test for JAL instructions
+
+   // Test for JALR instruction
    initial begin
 
       // load instructions
-      core.instruction_fetch_unit.instruction_memory[1] = 32'h00a40413; // addi x8, x8, 10
-      core.instruction_fetch_unit.instruction_memory[2] = 32'h00c002ef; // jal x5, 12
-      core.instruction_fetch_unit.instruction_memory[3] = 32'h06430313; // addi x6, x6, 100 (should be skipped)
-      core.instruction_fetch_unit.instruction_memory[4] = 32'h06438393; // addi x7, x7, 100 (should be skipped)
-      core.instruction_fetch_unit.instruction_memory[5] = 32'h00a40413; // addi x8, x8, 10
+      core.instruction_fetch_unit.instruction_memory[1] = 32'h00c40413; // addi x8, x8, 12
+      core.instruction_fetch_unit.instruction_memory[2] = 32'h008402e7; // jalr x5, 8(x8)
 
       $monitor("Time = %0t\nPC = 0x%0h\nINSTRUCTION = 0x%0h\nBRANCH_TAKEN = 0x%0h\nOPCODE = 0x%0h\nFUNCT3 = 0x%0h\nFUNCT7 = 0x%0h\nRD = 0x%0h\nRS1 = 0x%0h\nRS2 = 0x%0h\nIMM = 0x%0h\nIMM_TYPE = 0x%0h\nALU_CONTROL = 0x%0h\nREGWRITE_CONTROL = 0x%0h\nIMM_CONTROL = 0x%0h\nMEM_READ_CONTROL = 0x%0h\nMEM_WRITE_CONTROL = 0x%0h\nBRANCH_INSTRUCTION_CONTROL = 0x%0h\nBRANCH_TYPE = 0x%0h\nJAL_CONTROL = 0x%0h\nJALR_CONTROL = 0x%0h\nBRANCH_CONTROL = 0x%0h\nBRANCH_TARGET = 0x%0h\nALU_RESULT = 0x%0h\nZERO_FLAG = 0x%0h\nMEM_DATA_IN = 0x%0h\nMEM_ADDRESS = 0x%0h\nMEM_DATA_OUT = 0x%0h\nREAD_DATA1 = 0x%0h\nREAD_DATA2 = 0x%0h\nREG_WRITE_DATA = 0x%0h\nOPERAND_A = 0x%0h\nOPERAND_B = 0x%0h\nJUMP_TAKEN = 0x%0h\nJUMP_TARGET = 0x%0h\n\n",
                $time, d_pc, d_instruction, d_branch_taken, d_opcode, d_funct3, d_funct7, d_rd, d_rs1, d_rs2, d_imm, d_imm_type, d_alu_control, d_regwrite_control, d_imm_control, d_mem_read_control, d_mem_write_control, d_branch_instruction_control, d_branch_type, d_jal_control, d_jalr_control, d_branch_control, d_branch_target, d_alu_result, d_zero_flag, d_mem_data_in, d_mem_address, d_mem_data_out, d_read_data1, d_read_data2, d_reg_write_data, d_operand_a, d_operand_b, d_jump_taken, d_jump_target);
+
 
       $display("===PRINTING INSTRUCTION MEMORY===");
       for (i = 0; i < 256; i = i + 1) begin
@@ -186,6 +185,15 @@ module riscv_tb;
       reset = 0;
       #10;
 
+      #10;
+      $display("===PRINTING REGISTER CONTENTS===");
+      for (i = 0; i < 32; i = i + 1) begin
+         if (core.register_file_unit.reg_array[i] != 0) begin
+            $display("REG: x%d = 0x%0h", i, core.register_file_unit.reg_array[i]);
+         end
+      end
+      $display("===DONE PRINTING REGISTER CONTENTS===\n");
+
       #60;
 
       $display("===PRINTING REGISTER CONTENTS===");
@@ -197,6 +205,46 @@ module riscv_tb;
       $display("===DONE PRINTING REGISTER CONTENTS===\n");
 
       $stop;
+   // end
+
+   // Test for JAL instructions
+   // initial begin
+
+   //    // load instructions
+   //    core.instruction_fetch_unit.instruction_memory[1] = 32'h00a40413; // addi x8, x8, 10
+   //    core.instruction_fetch_unit.instruction_memory[2] = 32'h00c002ef; // jal x5, 12
+   //    core.instruction_fetch_unit.instruction_memory[3] = 32'h06430313; // addi x6, x6, 100 (should be skipped)
+   //    core.instruction_fetch_unit.instruction_memory[4] = 32'h06438393; // addi x7, x7, 100 (should be skipped)
+   //    core.instruction_fetch_unit.instruction_memory[5] = 32'h00a40413; // addi x8, x8, 10
+
+   //    $monitor("Time = %0t\nPC = 0x%0h\nINSTRUCTION = 0x%0h\nBRANCH_TAKEN = 0x%0h\nOPCODE = 0x%0h\nFUNCT3 = 0x%0h\nFUNCT7 = 0x%0h\nRD = 0x%0h\nRS1 = 0x%0h\nRS2 = 0x%0h\nIMM = 0x%0h\nIMM_TYPE = 0x%0h\nALU_CONTROL = 0x%0h\nREGWRITE_CONTROL = 0x%0h\nIMM_CONTROL = 0x%0h\nMEM_READ_CONTROL = 0x%0h\nMEM_WRITE_CONTROL = 0x%0h\nBRANCH_INSTRUCTION_CONTROL = 0x%0h\nBRANCH_TYPE = 0x%0h\nJAL_CONTROL = 0x%0h\nJALR_CONTROL = 0x%0h\nBRANCH_CONTROL = 0x%0h\nBRANCH_TARGET = 0x%0h\nALU_RESULT = 0x%0h\nZERO_FLAG = 0x%0h\nMEM_DATA_IN = 0x%0h\nMEM_ADDRESS = 0x%0h\nMEM_DATA_OUT = 0x%0h\nREAD_DATA1 = 0x%0h\nREAD_DATA2 = 0x%0h\nREG_WRITE_DATA = 0x%0h\nOPERAND_A = 0x%0h\nOPERAND_B = 0x%0h\nJUMP_TAKEN = 0x%0h\nJUMP_TARGET = 0x%0h\n\n",
+   //             $time, d_pc, d_instruction, d_branch_taken, d_opcode, d_funct3, d_funct7, d_rd, d_rs1, d_rs2, d_imm, d_imm_type, d_alu_control, d_regwrite_control, d_imm_control, d_mem_read_control, d_mem_write_control, d_branch_instruction_control, d_branch_type, d_jal_control, d_jalr_control, d_branch_control, d_branch_target, d_alu_result, d_zero_flag, d_mem_data_in, d_mem_address, d_mem_data_out, d_read_data1, d_read_data2, d_reg_write_data, d_operand_a, d_operand_b, d_jump_taken, d_jump_target);
+
+   //    $display("===PRINTING INSTRUCTION MEMORY===");
+   //    for (i = 0; i < 256; i = i + 1) begin
+   //       if (core.instruction_fetch_unit.instruction_memory[i] != 0) begin
+   //          $display("INST-MEM: [%d] = 0x%0h", i, core.instruction_fetch_unit.instruction_memory[i]);
+   //       end
+   //    end
+   //    $display("===DONE PRINTING INSTRUCTION MEMORY===\n");
+
+   //    // reset
+   //    reset = 1;
+   //    #10;
+   //    reset = 0;
+   //    #10;
+
+   //    #60;
+
+   //    $display("===PRINTING REGISTER CONTENTS===");
+   //    for (i = 0; i < 32; i = i + 1) begin
+   //       if (core.register_file_unit.reg_array[i] != 0) begin
+   //          $display("REG: x%d = 0x%0h", i, core.register_file_unit.reg_array[i]);
+   //       end
+   //    end
+   //    $display("===DONE PRINTING REGISTER CONTENTS===\n");
+
+   //    $stop;
 
    end
 

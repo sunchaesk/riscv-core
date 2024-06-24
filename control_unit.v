@@ -9,9 +9,9 @@ module control (
                 output reg       mem_read_control,
                 output reg       mem_write_control,
                 output reg       branch_instruction_control,
-                output reg [2:0] branch_type
+                output reg [2:0] branch_type,
                 output reg       jal_control,
-                output reg       jalr_control,
+                output reg       jalr_control
                 );
 
    always @(*) begin
@@ -118,7 +118,7 @@ module control (
            imm_control = 1;
            mem_read_control = 0;
            mem_write_control = 0;
-           branch_instruction_control = 1;
+           branch_instruction_control = 0;
            branch_type = 3'b010; // branch_type for Jump instructions
            alu_control = 4'b0010; // default value
            jal_control = 1;
@@ -129,7 +129,7 @@ module control (
            imm_control = 1;
            mem_read_control = 0;
            mem_write_control = 0;
-           branch_instruction_control = 1;
+           branch_instruction_control = 0;
            branch_type = 3'b010; // branch type for Jump instructions
            alu_control = 4'b0010;
            jal_control = 0;

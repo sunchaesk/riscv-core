@@ -45,11 +45,14 @@ module decoder(
              imm = {instruction[31], instruction[30:20], instruction[19:12], {11{1'b0}}};
              imm_type = 3'b011;
           end
-        7'b1101111: begin // J-type
+        7'b1101111: begin // jal
            imm = {instruction[31], instruction[19:12], instruction[20], instruction[30:25], instruction[24:21], 1'b0};
            imm_type = 3'b100;
         end
-
+        7'b1100111: begin // jalr (I-instruction)
+           imm = {{20{instruction[31]}}, instruction[30:20]};
+           imm_type = 3'b000;
+        end
       endcase
    end
 endmodule
