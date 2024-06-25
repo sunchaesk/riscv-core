@@ -1,5 +1,9 @@
 # RISCV-32
 
+## Characteristics
+- Modified Harvard Architecture (Three memory sources)
+- single cycle  
+
 ## notes
 - due to details in the instruction_fetch.v (IFU), instruction should be loaded from the [1] index not the [0] index.
 
