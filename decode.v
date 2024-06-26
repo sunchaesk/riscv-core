@@ -40,11 +40,11 @@ module decoder(
            imm = {{19{instruction[31]}}, instruction[7], instruction[30:25], instruction[11:8], 1'b0};
            imm_type = 3'b010;
         end
-        7'b0110111,
-          7'b0010111: begin // U-type
-             imm = {instruction[31], instruction[30:20], instruction[19:12], {11{1'b0}}};
-             imm_type = 3'b011;
-          end
+        // 7'b0110111,
+        //   7'b0010111: begin // U-type
+        //      imm = {instruction[31], instruction[30:20], instruction[19:12], {11{1'b0}}};
+        //      imm_type = 3'b011;
+        //   end
         7'b1101111: begin // jal
            imm = {instruction[31], instruction[19:12], instruction[20], instruction[30:25], instruction[24:21], 1'b0};
            imm_type = 3'b100;
